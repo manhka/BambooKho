@@ -1,6 +1,8 @@
 const Product = require("../models/Product");
 const ProductValidator = require("../validators/ProductValidator");
-
+const { Op } = require("sequelize");
+const Brand = require("../models/Brand");
+const Category = require("../models/Category");
 exports.createProduct = async (req, res) => {
   const data = req.body;
   const { isValid, errors } = ProductValidator.validate(data, false); // false = create
@@ -67,6 +69,76 @@ exports.updateProduct = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
+    res.status(500).json({
+      status: "error",
+      message: "server_error",
+    });
+  }
+};
+exports.getProducts = async (req, res) => {
+  try {
+    const { keyword, brand, category } = req.query;
+
+    // --- Where cho Product ---
+    const productConditions = {};
+    if (keyword) {
+      productConditions[Op.or] = [
+        { BarcodeProduct: { [Op.like]: `%${keyword}%` } },
+        { ProductName: { [Op.like]: `%${keyword}%` } },
+      ];
+    }
+
+    // --- Where cho Brand ---
+    const brandConditions = {};
+    if (brand) {
+      brandConditions.BrandName = { [Op.like]: `%${brand}%` };
+    }
+
+    // --- Where cho Category ---
+    const categoryConditions = {};
+    if (category) {
+      categoryConditions.CategoryName = { [Op.like]: `%${category}%` };
+    }
+
+    // --- Truy vấn ---
+    const products = await Product.findAll({
+      where: productConditions,
+      include: [
+        {
+          model: Brand,
+          attributes: ["BrandName"],
+          where: Object.keys(brandConditions).length
+            ? brandConditions
+            : undefined,
+          required: false,
+        },
+        {
+          model: Category,
+          attributes: ["CategoryName"],
+          where: Object.keys(categoryConditions).length
+            ? categoryConditions
+            : undefined,
+          required: false,
+        },
+      ],
+      order: [["CreateAt", "DESC"]],
+    });
+
+    if (products.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "product_not_found",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "fetch_success",
+      count: products.length,
+      data: products,
+    });
+  } catch (error) {
+    console.error("Get Products Error:", error);
     res.status(500).json({
       status: "error",
       message: "server_error",
