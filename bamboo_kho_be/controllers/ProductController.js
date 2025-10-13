@@ -179,3 +179,34 @@ exports.archiveProduct = async (req, res) => {
     });
   }
 };
+
+exports.getLowStockProducts = async (req, res) => {
+  try {
+    const threshold = parseInt(req.query.threshold) || 5;
+
+    const products = await Product.findAll({
+      where: {
+        NumberOfProduct: { [Op.lte]: threshold },
+        IsArchive: false,
+      },
+      include: [
+        { model: Brand, attributes: ["BrandName"] },
+        { model: Category, attributes: ["CategoryName"] },
+      ],
+      order: [["NumberOfProduct", "ASC"]],
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message: "low_stock_products_retrieved",
+      threshold,
+      data: products,
+    });
+  } catch (error) {
+    console.error("Error fetching low stock products:", error);
+    res.status(500).json({
+      status: "error",
+      message: "failed_to_retrieve_low_stock_products",
+    });
+  }
+};
