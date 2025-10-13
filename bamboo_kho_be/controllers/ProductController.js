@@ -145,3 +145,37 @@ exports.getProducts = async (req, res) => {
     });
   }
 };
+
+exports.archiveProduct = async (req, res) => {
+  try {
+    const { barcode } = req.params;
+    const { archive } = req.query; // ?archive=true hoặc ?archive=false
+
+    const product = await Product.findByPk(barcode);
+
+    if (!product) {
+      return res.status(404).json({
+        status: "error",
+        message: "product_not_found",
+      });
+    }
+
+    const newStatus = archive === "true";
+    await product.update({
+      IsArchive: newStatus,
+      UpdateAt: new Date(),
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: newStatus ? "product_archived" : "product_restored",
+      data: product,
+    });
+  } catch (error) {
+    console.error("Archive Product Error:", error);
+    res.status(500).json({
+      status: "error",
+      message: "server_error",
+    });
+  }
+};
