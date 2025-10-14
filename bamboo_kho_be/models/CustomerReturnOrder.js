@@ -16,7 +16,7 @@ const CustomerReturnOrder = sequelize.define(
       allowNull: true,
     },
     Reason: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     UserID: {

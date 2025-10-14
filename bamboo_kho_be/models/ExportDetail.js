@@ -41,6 +41,11 @@ const ExportDetail = sequelize.define(
       type: DataTypes.DOUBLE,
       allowNull: true,
     },
+    ReturnedQuantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     warranty_status: {
       type: DataTypes.BOOLEAN,
       allowNull: true,

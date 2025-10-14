@@ -1,8 +1,8 @@
-const Product = require("../models/Product");
 const ProductValidator = require("../validators/ProductValidator");
 const { Op } = require("sequelize");
 const Brand = require("../models/Brand");
 const Category = require("../models/Category");
+const { Product, Variant } = require("../models");
 exports.createProduct = async (req, res) => {
   const data = req.body;
   const { isValid, errors } = ProductValidator.validate(data, false); // false = create
@@ -208,5 +208,43 @@ exports.getLowStockProducts = async (req, res) => {
       status: "error",
       message: "failed_to_retrieve_low_stock_products",
     });
+  }
+};
+
+exports.viewProductDetails = async (req, res) => {
+  const { barcode } = req.params;
+
+  try {
+    const product = await Product.findOne({
+      where: { BarcodeProduct: barcode },
+      include: [
+        {
+          model: Variant,
+          attributes: [
+            "VariantID",
+            "AttributeName",
+            "Value",
+            "Unit",
+            "Description",
+            "createdAt",
+            "updatedAt",
+          ],
+        },
+      ],
+    });
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "product_not_found" });
+    }
+
+    res.json({
+      status: "success",
+      data: product,
+    });
+  } catch (err) {
+    console.error("Error fetching product details:", err);
+    res.status(500).json({ status: "error", message: "server_error" });
   }
 };

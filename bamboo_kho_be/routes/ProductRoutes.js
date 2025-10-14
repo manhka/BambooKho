@@ -8,4 +8,5 @@ router.put("/update/:barcode", productController.updateProduct);
 router.get("/", productController.getProducts);
 router.patch("/:barcode/archive", productController.archiveProduct);
 router.get("/stock/warning", productController.getLowStockProducts);
+router.get("/details/:barcode", productController.viewProductDetails);
 module.exports = router;
