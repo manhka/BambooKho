@@ -2,6 +2,9 @@ const CustomerReturnOrder = require("../models/CustomerReturnOrder");
 const CustomerReturnDetail = require("../models/CustomerReturnDetail");
 const ExportDetail = require("../models/ExportDetail");
 const Product = require("../models/Product");
+const Customer = require("../models/Customer");
+const User = require("../models/User");
+const ExportOrder = require("../models/ExportOrder");
 const {
   validateCustomerReturnInput,
 } = require("../validators/CustomerReturnValidator");
@@ -110,6 +113,105 @@ exports.createCustomerReturn = async (req, res) => {
   } catch (error) {
     console.error(error);
     await transaction.rollback();
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Lấy danh sách đơn trả hàng của khách
+exports.getCustomerReturns = async (req, res) => {
+  try {
+    const { fromDate, toDate, userID, exportID, barcode } = req.query;
+
+    const whereClause = {};
+
+    if (fromDate && toDate) {
+      whereClause.ReturnDate = { [Op.between]: [fromDate, toDate] };
+    } else if (fromDate) {
+      whereClause.ReturnDate = { [Op.gte]: fromDate };
+    } else if (toDate) {
+      whereClause.ReturnDate = { [Op.lte]: toDate };
+    }
+
+    if (userID) whereClause.UserID = userID;
+    if (exportID) whereClause.ExportID = exportID;
+
+    const returnOrders = await CustomerReturnOrder.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: CustomerReturnDetail,
+          include: [
+            { model: Product, attributes: ["ProductName", "BarcodeProduct"] },
+          ],
+        },
+        {
+          model: User,
+          attributes: ["Username"],
+        },
+        {
+          model: ExportOrder,
+          attributes: ["ExportID"],
+          include: [
+            {
+              model: Customer,
+              attributes: ["CustomerName", "Address", "Phone"],
+            },
+          ],
+        },
+      ],
+      order: [["ReturnDate", "DESC"]],
+    });
+
+    // Nếu có barcode thì lọc thủ công (do nested include)
+    const filteredOrders = barcode
+      ? returnOrders.filter((order) =>
+          order.CustomerReturnDetails.some((d) => d.BarcodeProduct === barcode)
+        )
+      : returnOrders;
+
+    res.status(200).json(filteredOrders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+// xem chi tiết đơn trả hàng
+exports.getCustomerReturnById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const returnOrder = await CustomerReturnOrder.findByPk(id, {
+      include: [
+        {
+          model: CustomerReturnDetail,
+          include: [
+            { model: Product, attributes: ["ProductName", "BarcodeProduct"] },
+          ],
+        },
+        {
+          model: User,
+          attributes: ["Username"],
+        },
+        {
+          model: ExportOrder,
+          attributes: ["ExportID"],
+          include: [
+            {
+              model: Customer,
+              attributes: ["CustomerName", "Address", "Phone"],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!returnOrder) {
+      return res.status(404).json({ message: "Customer return not found" });
+    }
+
+    res.status(200).json(returnOrder);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error", error });
   }
 };

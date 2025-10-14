@@ -21,15 +21,17 @@ const CustomerReturnDetail = sequelize.define(
     },
     CustomerReturnOrderID: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
-        model: "CustomerReturnOrder",
+        model: CustomerReturnOrder,
         key: "ReturnID",
       },
     },
     BarcodeProduct: {
       type: DataTypes.STRING(100),
+      allowNull: false,
       references: {
-        model: "Product",
+        model: Product,
         key: "BarcodeProduct",
       },
     },
@@ -40,9 +42,25 @@ const CustomerReturnDetail = sequelize.define(
   }
 );
 
+// ===== Thiết lập quan hệ =====
+CustomerReturnOrder.hasMany(CustomerReturnDetail, {
+  foreignKey: "CustomerReturnOrderID",
+  sourceKey: "ReturnID",
+});
+
 CustomerReturnDetail.belongsTo(CustomerReturnOrder, {
   foreignKey: "CustomerReturnOrderID",
+  targetKey: "ReturnID",
 });
-CustomerReturnDetail.belongsTo(Product, { foreignKey: "BarcodeProduct" });
+
+Product.hasMany(CustomerReturnDetail, {
+  foreignKey: "BarcodeProduct",
+  sourceKey: "BarcodeProduct",
+});
+
+CustomerReturnDetail.belongsTo(Product, {
+  foreignKey: "BarcodeProduct",
+  targetKey: "BarcodeProduct",
+});
 
 module.exports = CustomerReturnDetail;

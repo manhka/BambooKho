@@ -4,8 +4,8 @@ const customerReturnController = require("../controllers/CustomerReturnControlle
 
 router.post("/create", customerReturnController.createCustomerReturn);
 
-// router.get("/list", customerReturnController.g);
+router.get("/list", customerReturnController.getCustomerReturns);
 
-// router.get("/export", customerReturnController.exportReturnOrdersExcel);
+router.get("/detail/:id", customerReturnController.getCustomerReturnById);
 
 module.exports = router;
