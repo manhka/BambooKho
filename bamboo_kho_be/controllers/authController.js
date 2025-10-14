@@ -4,7 +4,7 @@ const pool = require("../configs/db");
 
 exports.register = async (req, res) => {
   try {
-    const { username, password, phone, warehouseId, roleId } = req.body;
+    const { username, password, phone, roleId } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ message: "Vui lòng nhập đủ thông tin" });
@@ -21,13 +21,13 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await pool.query(
-      "INSERT INTO User (Username, Password, Phone, Status, RoleID, WarehouseID) VALUES (?, ?, ?, ?, ?, ?)",
-      [username, hashedPassword, phone, true, roleId || 1, warehouseId || 1]
+      "INSERT INTO User (Username, Password, Phone, Status, RoleID) VALUES (?, ?, ?, ?, ?)",
+      [username, hashedPassword, phone || null, true, roleId || 1]
     );
 
     res.status(201).json({ message: "Đăng ký thành công" });
   } catch (err) {
-    console.error("Lỗi register:", err);
+    console.error("❌ Lỗi register:", err);
     res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 };
@@ -35,7 +35,8 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
-    console.log("Body nhận được:", req.body);
+    if (!username || !password)
+      return res.status(400).json({ message: "Thiếu username hoặc password" });
 
     const [users] = await pool.query("SELECT * FROM User WHERE Username = ?", [
       username,

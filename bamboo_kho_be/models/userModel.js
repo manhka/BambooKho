@@ -7,14 +7,13 @@ const User = {
 
   create: (newUser, callback) => {
     db.query(
-      "INSERT INTO User (Username, Password, Phone, Status, RoleID, WarehouseID) VALUES (?, ?, ?, ?, ?, ?)",
+      "INSERT INTO User (Username, Password, Phone, Status, RoleID) VALUES (?, ?, ?, ?, ?)",
       [
         newUser.Username,
         newUser.Password,
         newUser.Phone,
         newUser.Status,
         newUser.RoleID,
-        newUser.WarehouseID,
       ],
       callback
     );
