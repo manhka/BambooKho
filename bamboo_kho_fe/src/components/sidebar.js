@@ -23,7 +23,7 @@ export default function Sidebar({ isOpen, onLogout }) {
       href: "#",
       submenu: [
         { label: "Tất cả nhân viên", href: "#" },
-        { label: "Thêm nhân viên", href: "#" },
+        { label: "Thêm nhân viên", href: "/register" },
         { label: "Phòng ban", href: "#" },
       ],
     },
