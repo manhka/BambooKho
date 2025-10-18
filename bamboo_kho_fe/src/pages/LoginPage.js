@@ -26,109 +26,104 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="wrapper">
-      <section className="login-content">
-        <div className="container">
-          <div className="row align-items-center justify-content-center height-self-center">
-            <div className="col-lg-8">
-              <div className="card auth-card">
-                <div className="card-body p-0">
-                  <div className="d-flex align-items-center auth-content">
-                    {/* Form bên trái */}
-                    <div className="col-lg-7 align-self-center">
-                      <div className="p-3">
-                        <h2 className="mb-2">Đăng nhập</h2>
-                        <p>Vui lòng nhập thông tin tài khoản.</p>
-
-                        <form onSubmit={handleLogin}>
-                          <div className="row">
-                            <div className="col-lg-12">
-                              <div className="floating-label form-group">
-                                <input
-                                  className="floating-input form-control"
-                                  type="text"
-                                  value={username}
-                                  onChange={(e) => setUsername(e.target.value)}
-                                  placeholder=" "
-                                  required
-                                />
-                                <label>Tên đăng nhập</label>
-                              </div>
-                            </div>
-
-                            <div className="col-lg-12">
-                              <div className="floating-label form-group">
-                                <input
-                                  className="floating-input form-control"
-                                  type="password"
-                                  value={password}
-                                  onChange={(e) => setPassword(e.target.value)}
-                                  placeholder=" "
-                                  required
-                                />
-                                <label>Mật khẩu</label>
-                              </div>
-                            </div>
-
-                            <div className="col-lg-6">
-                              <div className="custom-control custom-checkbox mb-3">
-                                <input
-                                  type="checkbox"
-                                  className="custom-control-input"
-                                  id="remember"
-                                />
-                                <label
-                                  className="custom-control-label control-label-1"
-                                  htmlFor="remember"
-                                >
-                                  Ghi nhớ đăng nhập
-                                </label>
-                              </div>
-                            </div>
-
-                            <div className="col-lg-6">
-                              <a
-                                href="#"
-                                className="text-primary float-right"
-                              >
-                                Quên mật khẩu?
-                              </a>
-                            </div>
-                          </div>
-
-                          {error && (
-                            <p className="text-danger text-sm mb-2">{error}</p>
-                          )}
-
-                          <button type="submit" className="btn btn-primary">
-                            Đăng nhập
-                          </button>
-
-                          <p className="mt-3">
-                            Chưa có tài khoản?{" "}
-                            <a href="#" className="text-primary">
-                              Đăng ký
-                            </a>
-                          </p>
-                        </form>
-                      </div>
-                    </div>
-
-                    {/* Ảnh minh họa bên phải */}
-                    <div className="col-lg-5 content-right">
-                      <img
-                        src="/assets/images/login/01.png"
-                        className="img-fluid image-right"
-                        alt="login"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <div
+      style={{
+        fontFamily: "Times New Roman",
+        backgroundImage: "url('assets/bamboo-forest.jpg')",
+        backgroundSize: "cover",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          background: "white",
+          borderRadius: "12px",
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+          width: "800px",
+          maxWidth: "95%",
+        }}
+      >
+        <div style={{ flex: 1, padding: "40px" }}>
+          <h2 style={{ marginBottom: "20px", fontSize: "40px", textAlign: "center", color: "green" }}>BambooKho</h2>
+          <form onSubmit={handleLogin}>
+            <div style={{ marginBottom: "20px" }}>
+              <label style={{ display: "block", marginBottom: "5px" }}>
+                Tên đăng nhập
+              </label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "6px",
+                  border: "1px solid #ccc",
+                }}
+              />
             </div>
-          </div>
+
+            <div style={{ marginBottom: "20px" }}>
+              <label style={{ display: "block", marginBottom: "5px" }}>
+                Mật khẩu
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "6px",
+                  border: "1px solid #ccc",
+                }}
+              />
+            </div>
+
+            {error && (
+              <p style={{ color: "red", fontSize: "14px", marginBottom: "10px" }}>
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              style={{
+                width: "100%",
+                padding: "10px",
+                backgroundColor: "#007bff",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer",
+                fontSize: "16px",
+              }}
+            >
+              Đăng nhập
+            </button>
+          </form>
         </div>
-      </section>
+
+        <div style={{ flex: 1 }}>
+          <img
+            src="/assets/panda.webp"
+            alt="Panda"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 };
